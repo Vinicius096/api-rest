@@ -5,13 +5,15 @@ class Atendimento {
     adiciona(atendimento, res){
         const dataCriacao = moment().format('YYYY-MM-DD HH:MM:SS')
         const data = moment(atendimento.data, 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS')
+
         const dataEhValida = moment(data).isSameOrAfter(dataCriacao)
         const clienteEhValido = atendimento.cliente.length >= 5
+        
         const validacao = [
             {
                 nome: 'data',
                 valido: dataEhValida,
-                mensagem: 'Data deve ser maior ou igual a data de criacao'
+                mensagem: 'Data deve ser maior ou igual a data atual'
             },
             {
                 nome: 'cliente',
@@ -19,13 +21,16 @@ class Atendimento {
                 mensagem: 'Cliente de ter pelo menos 5 caracteres'
             }
         ]
+
         const erros = validacao.filter(campo => !campo.valido)
         const existemErros = erros.length
+
         if(existemErros){
             res.status(400).json(erros)
         }
         else {
             const atendimentoDatado = {...atendimento, dataCriacao, data}
+            
             const sql = 'INSERT INTO Atendimentos SET ?'
     
             conexao.query(sql, atendimentoDatado, (erro, resultados) => {
